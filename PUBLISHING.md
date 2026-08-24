@@ -5,17 +5,25 @@ This checklist covers the manual account and publication steps for `DiogoRibeiro
 ## One-time GitHub setup
 
 1. Create the public repository at <https://github.com/diogomrpr/task-cards> if it does not already exist. Do not initialize it with replacement project files.
-2. Commit the local `main` branch and connect it to GitHub:
+2. Confirm that `origin` points to the repository, adding it only if needed:
 
    ```sh
-   git add .
-   git commit -m "Prepare Task Cards 0.2.0 for publication"
+   git remote -v
+   ```
+
+   If `origin` is missing:
+
+   ```sh
    git remote add origin https://github.com/diogomrpr/task-cards.git
+   ```
+
+3. Push `main` and confirm that the public README, screenshot, contribution guide, issue templates, and CI workflow render correctly:
+
+   ```sh
    git push -u origin main
    ```
 
-3. Enable **Private vulnerability reporting** in the repository settings.
-4. Confirm that CI passes and `media/screenshot.png` renders correctly on GitHub.
+4. Enable **Private vulnerability reporting** in the repository settings.
 
 ## One-time Marketplace setup
 
@@ -30,6 +38,7 @@ From a clean checkout:
 ```sh
 corepack enable
 pnpm install --frozen-lockfile
+git status --short
 pnpm run check
 pnpm run audit
 pnpm run test:unit
@@ -37,6 +46,8 @@ pnpm run test:integration
 pnpm run test:minimum
 pnpm run package
 ```
+
+`git status --short` must produce no output before building the release. Push the exact release commit to the public `main` branch before Marketplace upload so the relative README links and screenshot resolve from the repository.
 
 Install `task-cards-0.2.0.vsix` locally and verify light, dark, and high-contrast themes; keyboard access; narrow and wide sidebars; confirmation cancellation; running and stop states; ordered folder runs; automatic refresh; and multi-root grouping.
 

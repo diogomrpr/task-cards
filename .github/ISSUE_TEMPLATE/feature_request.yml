@@ -2,6 +2,9 @@ name: Feature request
 description: Suggest a focused improvement to Task Cards.
 title: "[Feature]: "
 body:
+  - type: markdown
+    attributes:
+      value: Please review the [project philosophy and structure](https://github.com/diogomrpr/task-cards/blob/main/CONTRIBUTING.md#project-philosophy) before proposing implementation changes.
   - type: textarea
     attributes:
       label: Problem
@@ -14,9 +17,9 @@ body:
       description: Describe the smallest useful behavior and an example tasks.json entry if relevant.
     validations:
       required: true
-  - type: checkboxes
+  - type: textarea
     attributes:
-      label: Scope
-      options:
-        - label: This remains specific to official desktop VS Code and workspace tasks.json files.
-          required: true
+      label: Project fit
+      description: Explain how this fits the project philosophy. If it changes scope or architecture, explain why the current design is insufficient.
+    validations:
+      required: true

@@ -4,6 +4,8 @@ Task Cards turns tasks declared in each workspace folder's `.vscode/tasks.json` 
 
 ![Task Cards showing fixed-size cards in nested task folders](media/screenshot.png)
 
+[Get started](#getting-started) · [Contribute](CONTRIBUTING.md) · [Support](SUPPORT.md) · [Security](SECURITY.md)
+
 ## Features
 
 - Run a task by clicking anywhere on its card.
@@ -80,12 +82,11 @@ Confirmation is enforced only when a task is launched from Task Cards. VS Code d
 
 Task Cards targets official desktop VS Code, including remote workspaces. It has no browser extension entry, telemetry, or external network requests.
 
-## Contributing and support
+## Contributing
 
-- [Contributing guide](CONTRIBUTING.md)
-- [Support](SUPPORT.md)
-- [Security policy](SECURITY.md)
-- [Release and Marketplace checklist](PUBLISHING.md)
+Contributions are welcome. Start with the [contributing guide](CONTRIBUTING.md), which documents the project philosophy, architecture, development setup, test expectations, and the changes that should be discussed before implementation.
+
+For help, see [Support](SUPPORT.md). Report vulnerabilities through the private process in the [Security policy](SECURITY.md). Maintainers can use the [release and Marketplace checklist](PUBLISHING.md).
 
 ## License
 
