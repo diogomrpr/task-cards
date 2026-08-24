@@ -1,0 +1,17 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Workspace-file-only",
+        "type": "shell",
+        "command": "echo ignored"
+      }
+    ]
+  }
+}

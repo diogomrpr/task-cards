@@ -1,0 +1,173 @@
+{
+  "name": "task-cards",
+  "displayName": "Task Cards",
+  "description": "Browse and run workspace tasks as compact, organized cards.",
+  "version": "0.2.0",
+  "publisher": "DiogoRibeiro",
+  "private": true,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/diogomrpr/task-cards.git"
+  },
+  "bugs": {
+    "url": "https://github.com/diogomrpr/task-cards/issues"
+  },
+  "homepage": "https://github.com/diogomrpr/task-cards#readme",
+  "icon": "media/icon.png",
+  "galleryBanner": {
+    "color": "#176B87",
+    "theme": "dark"
+  },
+  "pricing": "Free",
+  "markdown": "github",
+  "engines": {
+    "vscode": "^1.96.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "tasks",
+    "task runner",
+    "task explorer",
+    "workspace",
+    "productivity",
+    "cards"
+  ],
+  "main": "./out/extension.js",
+  "extensionKind": [
+    "workspace"
+  ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": "limited",
+      "description": "Tasks can be viewed and edited in Restricted Mode, but running them requires a trusted workspace."
+    },
+    "virtualWorkspaces": false
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "taskCards.refresh",
+        "title": "Refresh",
+        "category": "Task Cards",
+        "icon": "$(refresh)"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "taskCards",
+          "title": "Task Cards",
+          "icon": "media/task-cards.svg"
+        }
+      ]
+    },
+    "views": {
+      "taskCards": [
+        {
+          "id": "taskCards.view",
+          "name": "Task Cards",
+          "type": "webview"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "taskCards.refresh",
+          "when": "view == taskCards.view",
+          "group": "navigation"
+        }
+      ]
+    },
+    "taskDefinitions": [
+      {
+        "type": "task-card",
+        "required": [
+          "label",
+          "command"
+        ],
+        "properties": {
+          "label": {
+            "type": "string",
+            "description": "The task label and stable identity within its workspace folder."
+          },
+          "command": {
+            "type": "string",
+            "description": "The command to execute."
+          },
+          "args": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Arguments passed to the command."
+          },
+          "execution": {
+            "type": "string",
+            "enum": [
+              "shell",
+              "process"
+            ],
+            "default": "shell",
+            "description": "Whether to run the command in a shell or as a process."
+          },
+          "folder": {
+            "type": "string",
+            "description": "Slash-separated folders used to organize the task in Task Cards."
+          },
+          "icon": {
+            "type": "string",
+            "description": "An emoji or short text icon displayed on the task card."
+          },
+          "confirm": {
+            "oneOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "default": false,
+            "description": "Ask for confirmation when Task Cards launches this task. A string is used as the confirmation message."
+          }
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "pnpm run compile",
+    "compile": "tsc -p .",
+    "watch": "tsc -watch -p .",
+    "check": "tsc -p . --noEmit",
+    "test:unit": "pnpm run compile && node --test out/test/unit/taskFile.test.js out/test/unit/webview.test.js",
+    "test:integration": "pnpm run compile && node scripts/run-integration.cjs trusted && node scripts/run-integration.cjs untrusted",
+    "test:minimum": "pnpm run compile && node scripts/run-integration.cjs minimum",
+    "test": "pnpm run test:unit && pnpm run test:integration",
+    "audit:prod": "pnpm audit --prod --audit-level high",
+    "package": "vsce package",
+    "publish": "vsce publish"
+  },
+  "dependencies": {
+    "jsonc-parser": "^3.3.1"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^20.19.43",
+    "@types/vscode": "1.96.0",
+    "@vscode/test-cli": "^0.0.15",
+    "@vscode/test-electron": "^3.1.0",
+    "@vscode/vsce": "^3.9.2",
+    "typescript": "^5.9.3"
+  },
+  "packageManager": "pnpm@11.19.0",
+  "pnpm": {
+    "ignoredBuiltDependencies": [
+      "@vscode/vsce-sign",
+      "keytar"
+    ]
+  }
+}

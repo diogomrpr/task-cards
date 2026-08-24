@@ -1,0 +1,463 @@
+:root {
+  color-scheme: light dark;
+  --task-card-background: var(
+    --vscode-list-inactiveSelectionBackground,
+    var(--vscode-editorWidget-background)
+  );
+  --task-card-hover-background: var(
+    --vscode-list-hoverBackground,
+    var(--task-card-background)
+  );
+  --task-card-running: var(--vscode-testing-iconFailed, #f14c4c);
+  --task-card-skeleton: color-mix(in srgb, var(--vscode-foreground) 16%, transparent);
+  --task-card-skeleton-highlight: color-mix(in srgb, var(--vscode-foreground) 9%, transparent);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  color: var(--vscode-foreground);
+  background: var(--vscode-sideBar-background);
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+}
+
+main {
+  padding: 4px;
+}
+
+button,
+input {
+  color: inherit;
+  font: inherit;
+}
+
+.search input {
+  width: 100%;
+  height: 28px;
+  padding: 4px 8px;
+  color: var(--vscode-input-foreground);
+  background: var(--vscode-input-background);
+  border: 1px solid var(--vscode-input-border, transparent);
+  border-radius: 4px;
+  outline: none;
+}
+
+.search input:focus {
+  border-color: var(--vscode-focusBorder);
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: -1px;
+}
+
+.search input:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.notice,
+.empty {
+  margin-top: 6px;
+  padding: 8px;
+  color: var(--vscode-notifications-foreground);
+  background: var(--vscode-notifications-background);
+  border: 1px solid
+    var(--vscode-notifications-border, var(--vscode-widget-border));
+  border-radius: 6px;
+}
+
+.notice button {
+  display: block;
+  margin-top: 8px;
+  padding: 3px 8px;
+  color: var(--vscode-button-foreground);
+  background: var(--vscode-button-background);
+  border: 0;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.notice button:hover {
+  background: var(--vscode-button-hoverBackground);
+}
+
+.notice button:focus-visible {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: 2px;
+}
+
+.section {
+  margin-top: 6px;
+}
+
+.section > summary {
+  position: relative;
+  min-height: 26px;
+  padding: 5px 32px 3px 2px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+}
+
+.section > summary:hover {
+  background: var(--vscode-list-hoverBackground);
+}
+
+.section > summary:focus-visible {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: -1px;
+}
+
+.section-body {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.section .section {
+  grid-column: 1 / -1;
+  margin-top: 0;
+  margin-left: 12px;
+}
+
+.card.skeleton-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.skeleton-card::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 20%,
+    var(--task-card-skeleton-highlight) 50%,
+    transparent 80%
+  );
+  content: "";
+  transform: translateX(-100%);
+  animation: skeleton-shimmer 2s ease-in-out infinite;
+}
+
+.skeleton-block {
+  display: block;
+  background: var(--task-card-skeleton);
+}
+
+.skeleton-icon {
+  flex: 0 0 22px;
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+}
+
+.skeleton-copy {
+  display: grid;
+  flex: 1;
+  gap: 6px;
+}
+
+.skeleton-line {
+  width: 82%;
+  height: 7px;
+  border-radius: 999px;
+}
+
+.skeleton-line.short {
+  width: 52%;
+}
+
+.skeleton-action {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+}
+
+.skeleton-stop {
+  flex-basis: 26px;
+  width: 26px;
+  height: 26px;
+  border-radius: 4px;
+}
+
+@keyframes skeleton-shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.card {
+  position: relative;
+  display: grid;
+  grid-template-rows: 36px;
+  min-width: 0;
+  height: 48px;
+  padding: 6px;
+  overflow: hidden;
+  background: var(--task-card-background);
+  border-radius: 6px;
+}
+
+.card:hover {
+  background: var(--task-card-hover-background);
+}
+
+.card:has(.card-run-surface:focus-visible) {
+  background: var(
+    --vscode-list-focusBackground,
+    var(--task-card-hover-background)
+  );
+}
+
+.card.running {
+  animation: running-pulse 3s ease-in-out infinite;
+}
+
+@keyframes running-pulse {
+  0%,
+  100% {
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--task-card-running) 30%, transparent);
+  }
+
+  50% {
+    box-shadow:
+      inset 0 0 0 2px var(--task-card-running),
+      0 0 8px color-mix(in srgb, var(--task-card-running) 45%, transparent);
+  }
+}
+
+.card.disabled {
+  opacity: 0.78;
+}
+
+.card-run-surface {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: inherit;
+  cursor: pointer;
+}
+
+.card-run-surface:focus-visible {
+  outline: 2px solid
+    var(--vscode-contrastActiveBorder, var(--vscode-focusBorder));
+  outline-offset: -2px;
+}
+
+.card-run-surface[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+.card-run-surface:disabled {
+  cursor: not-allowed;
+}
+
+.card-heading {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  gap: 6px;
+  overflow: hidden;
+}
+
+.card-icon {
+  flex: 0 0 auto;
+  max-width: 2em;
+  overflow: hidden;
+  font-size: 1.35em;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+h3 {
+  display: -webkit-box;
+  min-width: 0;
+  height: 36px;
+  margin: 0;
+  overflow: hidden;
+  font-size: 1em;
+  font-weight: 400;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: normal;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.card-heading h3 {
+  flex: 1;
+}
+
+.confirmation-indicator {
+  display: inline-flex;
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  align-items: center;
+  justify-content: center;
+  color: var(--vscode-badge-foreground);
+  background: var(--vscode-badge-background);
+  border-radius: 999px;
+  font-size: 0.8em;
+  font-weight: 700;
+}
+
+.error {
+  display: -webkit-box;
+  height: 36px;
+  min-height: 0;
+  margin: 0;
+  padding-right: 30px;
+  overflow: hidden;
+  color: var(--vscode-errorForeground);
+  line-height: 1.3;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.issue {
+  grid-template-rows: 36px 36px;
+  gap: 3px;
+  height: 89px;
+}
+
+.icon-button {
+  position: relative;
+  z-index: 2;
+  min-width: 26px;
+  min-height: 26px;
+  padding: 2px 5px;
+  color: var(--vscode-icon-foreground);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.icon-button:hover:not(:disabled) {
+  color: var(--vscode-toolbar-hoverForeground);
+  background: var(--vscode-toolbar-hoverBackground);
+}
+
+.icon-button:focus-visible {
+  color: var(--vscode-toolbar-hoverForeground);
+  background: var(--vscode-toolbar-hoverBackground);
+  border-color: var(--vscode-focusBorder);
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: 1px;
+}
+
+.icon-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.folder-run {
+  position: absolute;
+  top: 50%;
+  right: 2px;
+  transform: translateY(-50%);
+}
+
+.folder-run[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.folder-run[aria-disabled="true"]:hover {
+  color: inherit;
+  background: transparent;
+}
+
+.stop {
+  flex: 0 0 auto;
+  min-width: 26px;
+  min-height: 26px;
+  color: var(--vscode-testing-iconFailed);
+  font-size: 1.1em;
+}
+
+.issue .icon-button {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+body.vscode-reduce-motion .skeleton-card::after {
+  animation: none;
+}
+
+body.vscode-reduce-motion .card.running {
+  animation: none;
+  box-shadow: inset 0 0 0 2px var(--task-card-running);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-card::after {
+    animation: none;
+  }
+
+  .card.running {
+    animation: none;
+    box-shadow: inset 0 0 0 2px var(--task-card-running);
+  }
+}
+
+@media (forced-colors: active) {
+  .notice {
+    border-color: CanvasText;
+    box-shadow: none;
+  }
+
+  .card.running {
+    animation: none;
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
+
+  .skeleton-card {
+    outline: 1px solid CanvasText;
+  }
+
+  .skeleton-card::after {
+    display: none;
+  }
+
+  .skeleton-block {
+    background: CanvasText;
+  }
+}
+
+@media (max-width: 260px) {
+  .section-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -1,0 +1,5 @@
+nodeLinker: hoisted
+
+allowBuilds:
+  '@vscode/vsce-sign': false
+  keytar: false

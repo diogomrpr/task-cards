@@ -1,0 +1,54 @@
+name: Bug report
+description: Report a reproducible problem in Task Cards.
+title: "[Bug]: "
+body:
+  - type: checkboxes
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues for this problem.
+          required: true
+        - label: I reproduced the problem with the latest Task Cards version.
+          required: true
+  - type: textarea
+    attributes:
+      label: What happened?
+      description: Describe the actual and expected behavior.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Reproduction steps
+      placeholder: |
+        1. Open...
+        2. Select...
+        3. Observe...
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Relevant tasks.json
+      description: Remove secrets before pasting task definitions.
+      render: jsonc
+  - type: input
+    attributes:
+      label: VS Code version
+      placeholder: "1.96.0 or later"
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Task Cards version
+      placeholder: "0.2.0"
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: Workspace type
+      options:
+        - Local single-root
+        - Local multi-root
+        - Remote
+        - Restricted Mode
+    validations:
+      required: true

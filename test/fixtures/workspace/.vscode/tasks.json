@@ -1,0 +1,180 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Ordinary shell",
+      "type": "shell",
+      "command": "echo ordinary",
+      "detail": "An ordinary configured task",
+      "problemMatcher": []
+    },
+    {
+      "label": "Card shell",
+      "type": "task-card",
+      "command": "echo",
+      "args": [
+        "card-shell"
+      ],
+      "execution": "shell",
+      "folder": "Development/Tests",
+      "icon": "🧪",
+      "confirm": false,
+      "problemMatcher": []
+    },
+    {
+      "label": "Card process",
+      "type": "task-card",
+      "command": "node",
+      "args": [
+        "-e",
+        "process.exit(0)"
+      ],
+      "execution": "process",
+      "folder": "Development/Tests",
+      "confirm": false,
+      "detail": "A safe integration-test task",
+      "presentation": {
+        "reveal": "never",
+        "panel": "dedicated"
+      },
+      "runOptions": {
+        "reevaluateOnRerun": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Card shell line",
+      "type": "task-card",
+      "command": "node -e \"process.exit(0)\"",
+      "execution": "shell",
+      "folder": "Development/Tests",
+      "confirm": false,
+      "problemMatcher": []
+    },
+    {
+      "label": "Identity first",
+      "type": "task-card",
+      "command": "node",
+      "args": [
+        "-e",
+        "process.exit(0)"
+      ],
+      "execution": "process",
+      "folder": "Development/Identity",
+      "confirm": false,
+      "problemMatcher": []
+    },
+    {
+      "label": "Identity second",
+      "type": "task-card",
+      "command": "node",
+      "args": [
+        "-e",
+        "process.exit(0)"
+      ],
+      "execution": "process",
+      "folder": "Development/Identity",
+      "confirm": false,
+      "problemMatcher": []
+    },
+    {
+      "label": "Invalid card",
+      "type": "task-card",
+      "command": "node",
+      "args": "not-an-array",
+      "execution": "process",
+      "folder": "Development/Invalid",
+      "confirm": false,
+      "problemMatcher": []
+    },
+    {
+      "label": "Double launch guard",
+      "type": "task-card",
+      "command": "node",
+      "args": [
+        "-e",
+        "setTimeout(() => {}, 400)"
+      ],
+      "execution": "process",
+      "folder": "Development/Tests",
+      "confirm": false,
+      "problemMatcher": []
+    },
+    {
+      "label": "Sequence first",
+      "type": "task-card",
+      "command": "git",
+      "args": [
+        "--version"
+      ],
+      "execution": "process",
+      "folder": "Development/Sequence",
+      "confirm": false,
+      "problemMatcher": []
+    },
+    {
+      "label": "Sequence failure",
+      "type": "task-card",
+      "command": "git",
+      "args": [
+        "--definitely-not-a-real-option"
+      ],
+      "execution": "process",
+      "folder": "Development/Sequence/Nested",
+      "confirm": false,
+      "problemMatcher": []
+    },
+    {
+      "label": "Sequence skipped",
+      "type": "task-card",
+      "command": "git",
+      "args": [
+        "--version",
+        "--build-options"
+      ],
+      "execution": "process",
+      "folder": "Development/Sequence/Nested",
+      "confirm": false,
+      "problemMatcher": []
+    },
+    {
+      "label": "Card long running",
+      "type": "task-card",
+      "command": "node",
+      "args": [
+        "-e",
+        "setTimeout(() => {}, 30000)"
+      ],
+      "execution": "process",
+      "folder": "Development/Tests",
+      "confirm": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Removal first",
+      "type": "task-card",
+      "command": "node",
+      "args": [
+        "-e",
+        "setTimeout(() => {}, 1200)"
+      ],
+      "execution": "process",
+      "folder": "Development/Removal",
+      "confirm": false,
+      "problemMatcher": []
+    },
+    {
+      "label": "Removal second",
+      "type": "task-card",
+      "command": "node",
+      "args": [
+        "-e",
+        "process.exit(0)"
+      ],
+      "execution": "process",
+      "folder": "Development/Removal",
+      "confirm": false,
+      "problemMatcher": []
+    }
+  ]
+}

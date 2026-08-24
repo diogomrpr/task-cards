@@ -1,0 +1,176 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "task-card",
+      "label": "Build BIZ",
+      "command": "dotnet build ./Business/Business.sln",
+      "folder": "Build",
+      "icon": "🔨",
+      "detail": "Build the Business solution.",
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "type": "task-card",
+      "label": "Build HTML",
+      "command": "cmf build ./HTML/",
+      "folder": "Build",
+      "icon": "🌐",
+      "detail": "Build the HTML application."
+    },
+    {
+      "type": "task-card",
+      "label": "Build HTML Customization",
+      "command": "CUSTOMIZATION_PROJECT=$(node -e \"const projects = require('./HTML/angular.json').projects; const matches = Object.entries(projects).filter(([name, project]) => name.startsWith('customization-') && project.projectType === 'library').map(([name]) => name); if (matches.length !== 1) { console.error('Expected exactly one customization library, found ' + matches.length + ': ' + (matches.join(', ') || 'none')); process.exit(1); } process.stdout.write(matches[0]);\") && npm --prefix ./HTML/ run ng -- build \"$CUSTOMIZATION_PROJECT\" --configuration development",
+      "folder": "Build / HTML",
+      "icon": "🧩",
+      "detail": "Build the discovered customization library in development mode."
+    },
+    {
+      "type": "task-card",
+      "label": "UP",
+      "command": "cmf-dev local stack up -c .localenv/mes",
+      "folder": "Local Stack",
+      "icon": "▶️",
+      "detail": "Start the MES local stack.",
+      "confirm": "Start the MES local stack?"
+    },
+    {
+      "type": "task-card",
+      "label": "UP w/DP core",
+      "command": "cmf-dev local stack up -c .localenv/mes -c .localenv/dataplatform --scale aggregation-engine=0",
+      "folder": "Local Stack",
+      "icon": "▶️",
+      "detail": "Start MES with the Data Platform core and aggregation disabled.",
+      "confirm": "Start the MES stack with Data Platform core?"
+    },
+    {
+      "type": "task-card",
+      "label": "UP w/Agg",
+      "command": "cmf-dev local stack up -c .localenv/mes -c .localenv/dataplatform",
+      "folder": "Local Stack",
+      "icon": "🚀",
+      "detail": "Start MES with the Data Platform and aggregation engine.",
+      "confirm": "Start the MES stack with aggregation?"
+    },
+    {
+      "type": "task-card",
+      "label": "LBOs",
+      "command": "cmf-dev local stack up -c .localenv/mes && cmf-dev local lbos",
+      "folder": "Local Stack",
+      "icon": "📦",
+      "detail": "Start the MES stack and local LBO services.",
+      "confirm": "Start the MES stack and local LBO services?"
+    },
+    {
+      "type": "task-card",
+      "label": "DOWN",
+      "command": "cmf-dev local stack down",
+      "folder": "Local Stack",
+      "icon": "⏹️",
+      "detail": "Stop the local stack.",
+      "confirm": "Stop the local stack?"
+    },
+    {
+      "type": "task-card",
+      "label": "DOWN remove",
+      "command": "cmf-dev local stack down --remove-volumes",
+      "folder": "Local Stack / Cleanup",
+      "icon": "🧹",
+      "detail": "Stop the local stack and remove its volumes.",
+      "confirm": "Stop the stack and permanently remove its volumes?"
+    },
+    {
+      "type": "task-card",
+      "label": "Serve HTML",
+      "command": "yes | npm --prefix ./HTML/ run serve",
+      "folder": "Serve",
+      "icon": "👀",
+      "detail": "Serve the HTML application locally."
+    },
+    {
+      "type": "task-card",
+      "label": "Serve Documentation",
+      "command": "mise",
+      "args": [
+        "run",
+        "serve"
+      ],
+      "execution": "process",
+      "options": {
+        "cwd": "${workspaceFolder}/Documentation/DocumentationPortal"
+      },
+      "folder": "Serve",
+      "icon": "📚",
+      "detail": "Serve the documentation portal locally."
+    },
+    {
+      "type": "task-card",
+      "label": "Publish Deployment Manifest",
+      "command": "./Tools/DeploymentManifest/publish_deployment_manifest.sh",
+      "folder": "Release",
+      "icon": "📤",
+      "detail": "Publish the deployment manifest.",
+      "confirm": "Publish the deployment manifest?"
+    },
+    {
+      "type": "task-card",
+      "label": "Update App Version",
+      "command": "bash",
+      "args": [
+        "Tools/update-app-version.sh",
+        "${input:newAppVersion}"
+      ],
+      "execution": "process",
+      "folder": "Release / Versioning",
+      "icon": "🏷️",
+      "detail": "Update the application version across the repository."
+    },
+    {
+      "type": "task-card",
+      "label": "Update MES Version",
+      "command": "bash",
+      "args": [
+        "Tools/update-mes-version.sh",
+        "${input:newMESVersion}"
+      ],
+      "execution": "process",
+      "folder": "Release / Versioning",
+      "icon": "🏷️",
+      "detail": "Update the MES version across the repository."
+    },
+    {
+      "type": "task-card",
+      "label": "Generate Release Notes",
+      "command": "python3",
+      "args": [
+        "Tools/AzureDevOps/generate-release-notes.py"
+      ],
+      "execution": "process",
+      "folder": "Release",
+      "icon": "📝",
+      "detail": "Generate release notes from Azure DevOps history."
+    },
+    {
+      "type": "task-card",
+      "label": "Clear Docker",
+      "command": "docker system prune && docker system prune --volumes && docker volume prune && docker system prune -a && docker buildx prune --all && docker builder prune --all",
+      "folder": "Maintenance / Docker",
+      "icon": "🗑️",
+      "detail": "Remove unused Docker data, images, volumes, and builders.",
+      "confirm": "This removes unused Docker data, images, volumes, and builders. Continue?"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "newAppVersion",
+      "description": "New app version (X.Y.Z or X.Y.Z-pre.N)",
+      "type": "promptString"
+    },
+    {
+      "id": "newMESVersion",
+      "description": "New MES version (X.Y.Z or X.Y.Z-pre.N)",
+      "type": "promptString"
+    }
+  ]
+}

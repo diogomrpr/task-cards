@@ -1,0 +1,11 @@
+node_modules/
+.pnpm-store/
+out/
+.vscode-test/
+.pack-bin/
+*.vsix
+*.tgz
+*.log
+.env
+.DS_Store
+Thumbs.db

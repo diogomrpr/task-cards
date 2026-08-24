@@ -1,0 +1,7 @@
+{
+  "name": "task-cards-fixture",
+  "private": true,
+  "scripts": {
+    "auto-only": "echo this task must not appear in Task Cards"
+  }
+}
