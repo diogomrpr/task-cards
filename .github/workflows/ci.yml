@@ -39,8 +39,8 @@ jobs:
       - name: Type-check
         run: pnpm run check
 
-      - name: Audit production dependencies
-        run: pnpm run audit:prod
+      - name: Audit dependencies
+        run: pnpm run audit
 
       - name: Run unit tests
         run: pnpm run test:unit

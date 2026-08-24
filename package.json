@@ -147,9 +147,9 @@
     "test:integration": "pnpm run compile && node scripts/run-integration.cjs trusted && node scripts/run-integration.cjs untrusted",
     "test:minimum": "pnpm run compile && node scripts/run-integration.cjs minimum",
     "test": "pnpm run test:unit && pnpm run test:integration",
-    "audit:prod": "pnpm audit --prod --audit-level high",
-    "package": "vsce package",
-    "publish": "vsce publish"
+    "audit": "pnpm audit",
+    "package": "vsce package --follow-symlinks",
+    "publish": "vsce publish --follow-symlinks"
   },
   "dependencies": {
     "jsonc-parser": "^3.3.1"
@@ -163,11 +163,5 @@
     "@vscode/vsce": "^3.9.2",
     "typescript": "^5.9.3"
   },
-  "packageManager": "pnpm@11.19.0",
-  "pnpm": {
-    "ignoredBuiltDependencies": [
-      "@vscode/vsce-sign",
-      "keytar"
-    ]
-  }
+  "packageManager": "pnpm@11.19.0"
 }

@@ -31,7 +31,7 @@ From a clean checkout:
 corepack enable
 pnpm install --frozen-lockfile
 pnpm run check
-pnpm run audit:prod
+pnpm run audit
 pnpm run test:unit
 pnpm run test:integration
 pnpm run test:minimum
