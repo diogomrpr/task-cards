@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.1
+
+- Applied `folder`, `icon`, and `confirm` metadata to configured `shell`, `process`, and extension-contributed tasks without changing their native VS Code execution.
+- Preserved task and folder order from their first appearance in `tasks.json`.
+- Previewed folder-run order with numbered green card outlines, excluding tasks marked with `skipFolderRun` and disabling the preview while a folder run is active.
+- Added optional string-only confirmation messages with a shared confirmation headline and combined folder-run prompts.
+
 ## 0.2.0
 
 - Corrected shell execution so complete command lines retain pipes, `&&`, quoting, and other shell syntax.

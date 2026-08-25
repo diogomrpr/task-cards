@@ -1,7 +1,7 @@
 import { randomBytes } from "node:crypto";
 import * as vscode from "vscode";
 import { CatalogTask, TaskCatalog } from "./catalog";
-import { taskSearchText } from "./taskFile";
+import { confirmationPrompt, taskSearchText } from "./taskFile";
 
 interface WebviewMessage {
   type: "ready" | "run" | "runFolder" | "stop" | "contextMenu" | "openIssue" | "manageTrust";
@@ -141,6 +141,7 @@ export class TaskCardsViewProvider implements vscode.WebviewViewProvider, vscode
 
     const tasks = this.catalog.tasks.filter((task) =>
       task.workspaceId === workspaceId
+      && !task.skipFolderRun
       && folderContains(folderSegments, task.folderSegments)
     );
     if (tasks.length === 0) {
@@ -165,6 +166,9 @@ export class TaskCardsViewProvider implements vscode.WebviewViewProvider, vscode
       void vscode.window.showErrorMessage(
         `Unable to run folder: "${blocked.label}" is unavailable. ${blocked.disabledReason ?? ""}`.trim()
       );
+      return;
+    }
+    if (!await this.confirmTasks(tasks, "Run Folder", true)) {
       return;
     }
 
@@ -225,18 +229,8 @@ export class TaskCardsViewProvider implements vscode.WebviewViewProvider, vscode
         return undefined;
       }
 
-      if (task.confirm !== false) {
-        const message = typeof task.confirm === "string" && task.confirm.length > 0
-          ? task.confirm
-          : `Run "${task.label}"?`;
-        const choice = await vscode.window.showWarningMessage(
-          message,
-          { modal: true },
-          "Run Task"
-        );
-        if (choice !== "Run Task") {
-          return undefined;
-        }
+      if (!fromFolder && !await this.confirmTasks([task], "Run Task")) {
+        return undefined;
       }
 
       try {
@@ -253,6 +247,23 @@ export class TaskCardsViewProvider implements vscode.WebviewViewProvider, vscode
       this.starting.delete(task.key);
       this.render();
     }
+  }
+
+  private async confirmTasks(
+    tasks: readonly CatalogTask[],
+    action: "Run Task" | "Run Folder",
+    list = false
+  ): Promise<boolean> {
+    const prompt = confirmationPrompt(tasks, list);
+    if (!prompt) {
+      return true;
+    }
+    const choice = await vscode.window.showWarningMessage(
+      prompt.message,
+      { modal: true, detail: prompt.detail },
+      action
+    );
+    return choice === action;
   }
 
   private stopTask(key: string): void {
@@ -482,7 +493,8 @@ function taskModel(
     workspaceId: task.workspaceId,
     workspaceName: task.workspaceName,
     folderSegments: task.folderSegments.length > 0 ? task.folderSegments : ["Ungrouped"],
-    confirm: task.confirm !== false,
+    skipFolderRun: task.skipFolderRun,
+    confirm: typeof task.confirm === "string" && task.confirm.length > 0,
     running,
     disabledReason: task.disabledReason,
     unavailableReason,

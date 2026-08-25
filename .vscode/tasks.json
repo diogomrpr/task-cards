@@ -5,37 +5,279 @@
       "label": "Compile",
       "type": "shell",
       "command": "pnpm run compile",
+      "folder": "Development/Build",
+      "icon": "🔨",
+      "detail": "Compile TypeScript into the out directory",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
       "problemMatcher": "$tsc"
     },
     {
-      "label": "Watch",
+      "label": "Watch extension",
       "type": "shell",
       "command": "pnpm run watch",
+      "folder": "Development/Build",
+      "icon": "👀",
+      "detail": "Keep TypeScript compilation running; use the stop button on the card",
       "isBackground": true,
       "problemMatcher": "$tsc-watch"
+    },
+    {
+      "label": "Type check",
+      "type": "shell",
+      "command": "pnpm run check",
+      "folder": "Development/Quality",
+      "icon": "TS",
+      "detail": "Validate types without writing output",
+      "problemMatcher": "$tsc"
+    },
+    {
+      "label": "Audit dependencies",
+      "type": "shell",
+      "command": "pnpm run audit",
+      "folder": "Development/Quality",
+      "icon": "🛡️",
+      "detail": "Check dependencies for known vulnerabilities",
+      "problemMatcher": []
     },
     {
       "label": "Test unit",
       "type": "shell",
       "command": "pnpm run test:unit",
+      "folder": "Tests",
+      "icon": "🧪",
+      "detail": "Run the fast unit test suite",
+      "group": "test",
       "problemMatcher": []
     },
     {
       "label": "Test integration",
       "type": "shell",
       "command": "pnpm run test:integration",
+      "folder": "Tests",
+      "icon": "💻",
+      "detail": "Run trusted and Restricted Mode extension-host tests",
+      "group": "test",
       "problemMatcher": []
     },
     {
-      "label": "Audit dependencies",
+      "label": "Test minimum VS Code",
       "type": "shell",
-      "command": "pnpm run audit",
+      "command": "pnpm run test:minimum",
+      "folder": "Tests",
+      "icon": "1.96",
+      "detail": "Run compatibility tests against the minimum supported VS Code",
+      "group": "test",
       "problemMatcher": []
     },
     {
       "label": "Package extension",
       "type": "shell",
       "command": "pnpm run package",
+      "folder": "Release",
+      "icon": "📦",
+      "confirm": "Build a local VSIX package?",
+      "detail": "Build a local VSIX package; demonstrates the standard confirmation prompt",
+      "problemMatcher": []
+    },
+    {
+      "label": "Publish extension",
+      "type": "task-card",
+      "command": "pwsh",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "Write-Host 'Demo only: no extension was published'"
+      ],
+      "execution": "process",
+      "folder": "Release",
+      "icon": "🚀",
+      "confirm": "Publish the extension to the Marketplace? (This demo only prints a message.)",
+      "detail": "Safe publish simulation with a custom confirmation message",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Complete shell command",
+      "type": "task-card",
+      "command": "pwsh --version && git --version",
+      "folder": "Feature demos/Execution",
+      "icon": "SH",
+      "detail": "Shell command-line form with an operator and no args array",
+      "problemMatcher": []
+    },
+    {
+      "label": "Process with arguments",
+      "type": "task-card",
+      "command": "pwsh",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "Write-Host 'Process execution and args work'"
+      ],
+      "execution": "process",
+      "folder": "Feature demos/Execution",
+      "icon": "⚙️",
+      "detail": "Direct process execution with a string args array",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Environment and working directory",
+      "type": "task-card",
+      "command": "pwsh",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "Write-Host $env:TASK_CARDS_DEMO (Get-Location)"
+      ],
+      "execution": "process",
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "TASK_CARDS_DEMO": "Environment options work"
+        }
+      },
+      "folder": "Feature demos/Execution/Options",
+      "icon": "ENV",
+      "detail": "Search token: lighthouse; demonstrates options.cwd and options.env",
+      "problemMatcher": []
+    },
+    {
+      "label": "Confirmation message",
+      "type": "task-card",
+      "command": "pwsh",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "Write-Host 'Confirmation accepted'"
+      ],
+      "execution": "process",
+      "folder": "Feature demos/Confirmation",
+      "icon": "!",
+      "confirm": "Run this task after confirming the configured message?",
+      "detail": "Shows the confirmation badge and configured message",
+      "problemMatcher": []
+    },
+    {
+      "label": "Custom confirmation",
+      "type": "task-card",
+      "command": "pwsh",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "Write-Host 'Custom confirmation accepted'"
+      ],
+      "execution": "process",
+      "folder": "Feature demos/Confirmation",
+      "icon": "🔐",
+      "confirm": "This is the custom confirmation message. Continue?",
+      "detail": "Shows the confirmation badge and a custom prompt",
+      "problemMatcher": []
+    },
+    {
+      "label": "Long-running task",
+      "type": "task-card",
+      "command": "pwsh",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "Write-Host 'Running for 60 seconds; stop me from the card'; Start-Sleep -Seconds 60"
+      ],
+      "execution": "process",
+      "folder": "Feature demos/States",
+      "icon": "⏳",
+      "detail": "Shows the running pulse and direct stop control for one minute",
+      "problemMatcher": []
+    },
+    {
+      "label": "Unavailable task",
+      "type": "task-card",
+      "command": "",
+      "folder": "Feature demos/States",
+      "icon": "🚫",
+      "detail": "Intentionally invalid so the disabled-card and blocked-folder states remain visible",
+      "problemMatcher": []
+    },
+    {
+      "label": "Ordered run: first",
+      "type": "task-card",
+      "command": "pwsh",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "Write-Host 'Step 1 succeeded'"
+      ],
+      "execution": "process",
+      "folder": "Feature demos/Ordered run",
+      "icon": "1",
+      "detail": "First task in the folder sequence",
+      "problemMatcher": []
+    },
+    {
+      "label": "Ordered run: ignored",
+      "type": "task-card",
+      "command": "pwsh",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "Write-Host 'This runs individually but should be skipped by the folder run'"
+      ],
+      "execution": "process",
+      "folder": "Feature demos/Ordered run",
+      "icon": "3",
+      "skipFolderRun": true,
+      "detail": "Runs individually but is excluded from folder runs and order previews",
+      "problemMatcher": []
+    },
+    {
+      "label": "Ordered run: intentional failure",
+      "type": "task-card",
+      "command": "pwsh",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "Write-Error 'Step 2 failed intentionally'; exit 1"
+      ],
+      "execution": "process",
+      "folder": "Feature demos/Ordered run",
+      "icon": "2",
+      "detail": "Second task exits with code 1 so the folder sequence stops",
+      "problemMatcher": []
+    },
+    {
+      "label": "Ordinary process task",
+      "type": "process",
+      "command": "pwsh",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "Write-Host 'Ordinary VS Code process task'"
+      ],
+      "folder": "Feature demos/Native task types",
+      "icon": "VS",
+      "detail": "Built-in process task decorated with Task Cards metadata",
+      "problemMatcher": []
+    },
+    {
+      "label": "Ungrouped task without icon",
+      "type": "process",
+      "command": "pwsh",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "Write-Host 'Ungrouped card without an icon'"
+      ],
+      "detail": "No folder or icon, so this appears in Ungrouped with the compact fallback layout",
       "problemMatcher": []
     }
   ]

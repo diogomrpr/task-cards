@@ -9,7 +9,8 @@ interface TaskCardDefinition extends vscode.TaskDefinition {
   execution?: "shell" | "process";
   folder?: string;
   icon?: string;
-  confirm?: boolean | string;
+  skipFolderRun?: boolean;
+  confirm?: string;
 }
 
 export class TaskCardTaskProvider implements vscode.TaskProvider {

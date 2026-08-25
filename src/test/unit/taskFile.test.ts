@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
+  confirmationPrompt,
   createTaskKey,
   normalizeFolder,
   parseTaskFile,
@@ -18,6 +19,7 @@ describe("taskFile", () => {
         "command": "npm",
         "folder": " Deploy // Production ",
         "icon": "🚀",
+        "skipFolderRun": true,
         "confirm": "Continue?",
       }],
     }`;
@@ -27,12 +29,14 @@ describe("taskFile", () => {
     assert.equal(result.tasks.length, 1);
     assert.deepEqual(result.tasks[0].folderSegments, ["Deploy", "Production"]);
     assert.equal(result.tasks[0].icon, "🚀");
+    assert.equal(result.tasks[0].skipFolderRun, true);
     assert.equal(result.tasks[0].confirm, "Continue?");
     assert.deepEqual(result.tasks[0].taskCardDefinition, {
       label: "Deploy",
       command: "npm",
       folder: " Deploy // Production ",
       icon: "🚀",
+      skipFolderRun: true,
       confirm: "Continue?"
     });
     assert.equal(
@@ -41,22 +45,24 @@ describe("taskFile", () => {
     );
   });
 
-  it("keeps ordinary tasks ungrouped and ignores custom card metadata", () => {
+  it("applies layout and confirmation metadata to ordinary configured tasks", () => {
     const result = parseTaskFile(`{
       "version": "2.0.0",
       "tasks": [{
         "label": "Build",
         "type": "shell",
         "command": "npm run build",
-        "folder": "Ignored",
+        "folder": "Build/HTML",
         "icon": "🔨",
-        "confirm": true
+        "skipFolderRun": true,
+        "confirm": "Continue?"
       }]
     }`, "workspace", "Example", "file:///tasks.json");
 
-    assert.deepEqual(result.tasks[0].folderSegments, []);
-    assert.equal(result.tasks[0].icon, undefined);
-    assert.equal(result.tasks[0].confirm, false);
+    assert.deepEqual(result.tasks[0].folderSegments, ["Build", "HTML"]);
+    assert.equal(result.tasks[0].icon, "🔨");
+    assert.equal(result.tasks[0].skipFolderRun, true);
+    assert.equal(result.tasks[0].confirm, "Continue?");
   });
 
   it("reports syntax errors and duplicate labels as disabled tasks", () => {
@@ -103,7 +109,7 @@ describe("taskFile", () => {
         "execution": "shell",
         "folder": "",
         "icon": "",
-        "confirm": false
+        "skipFolderRun": false
       }]
     }`, "workspace", "Example", "file:///tasks.json");
 
@@ -114,7 +120,7 @@ describe("taskFile", () => {
       execution: "shell",
       folder: "",
       icon: "",
-      confirm: false
+      skipFolderRun: false
     });
   });
 
@@ -133,5 +139,35 @@ describe("taskFile", () => {
       folderSegments: ["Release"],
       workspaceName: "App"
     }), /deploy production task-card release app/);
+  });
+
+  it("formats individual and folder confirmation prompts", () => {
+    assert.deepEqual(confirmationPrompt([
+      { label: "Deploy", confirm: "Deploy production?" }
+    ]), {
+      message: "Are you sure you want to proceed?",
+      detail: "Deploy production?"
+    });
+    assert.deepEqual(confirmationPrompt([
+      { label: "Build", confirm: "Build the project?" },
+      { label: "Tests" },
+      { label: "Deploy", confirm: "Deploy production?" }
+    ], true), {
+      message: "Are you sure you want to proceed?",
+      detail: "• Build the project?\n• Deploy production?"
+    });
+    assert.equal(confirmationPrompt([{ label: "Tests" }], true), undefined);
+  });
+
+  it("rejects boolean and empty confirmation values", () => {
+    const result = parseTaskFile(`{
+      "tasks": [
+        { "label": "True", "type": "task-card", "command": "echo", "confirm": true },
+        { "label": "False", "type": "task-card", "command": "echo", "confirm": false },
+        { "label": "Empty", "type": "task-card", "command": "echo", "confirm": "" }
+      ]
+    }`, "workspace", "Example", "file:///tasks.json");
+
+    assert.ok(result.tasks.every((task) => /non-empty string/.test(task.error ?? "")));
   });
 });

@@ -7,7 +7,6 @@ import {
   printParseErrorCode
 } from "jsonc-parser";
 
-export type Confirmation = boolean | string;
 export type ExecutionKind = "shell" | "process";
 
 export interface TaskCommandOptions {
@@ -26,7 +25,8 @@ export interface TaskCardDefinitionData {
   execution?: ExecutionKind;
   folder?: string;
   icon?: string;
-  confirm?: Confirmation;
+  skipFolderRun?: boolean;
+  confirm?: string;
 }
 
 export interface ParsedTask {
@@ -41,7 +41,8 @@ export interface ParsedTask {
   options?: TaskCommandOptions;
   folderSegments: string[];
   icon?: string;
-  confirm: Confirmation;
+  skipFolderRun: boolean;
+  confirm?: string;
   detail?: string;
   taskCardDefinition?: TaskCardDefinitionData;
   labelOffset: number;
@@ -86,6 +87,20 @@ export function taskSearchText(task: Pick<ParsedTask, "label" | "detail" | "type
     task.folderSegments.join("/"),
     task.workspaceName
   ].join(" ").toLocaleLowerCase();
+}
+
+export function confirmationPrompt(
+  tasks: readonly Pick<ParsedTask, "label" | "confirm">[],
+  list = false
+): { message: string; detail: string } | undefined {
+  const messages = tasks.flatMap((task) => typeof task.confirm === "string" ? [task.confirm] : []);
+  if (messages.length === 0) {
+    return undefined;
+  }
+  return {
+    message: "Are you sure you want to proceed?",
+    detail: list ? messages.map((message) => `• ${message}`).join("\n") : messages[0]
+  };
 }
 
 export function parseTaskFile(
@@ -164,11 +179,10 @@ export function parseTaskFile(
       args: stringArray(raw.args),
       execution: raw.execution === "process" ? "process" : "shell",
       options: commandOptions(raw.options),
-      folderSegments: type === "task-card" ? normalizeFolder(raw.folder) : [],
-      icon: type === "task-card" && typeof raw.icon === "string" ? raw.icon : undefined,
-      confirm: type === "task-card" && (typeof raw.confirm === "boolean" || typeof raw.confirm === "string")
-        ? raw.confirm
-        : false,
+      folderSegments: normalizeFolder(raw.folder),
+      icon: typeof raw.icon === "string" ? raw.icon : undefined,
+      skipFolderRun: raw.skipFolderRun === true,
+      confirm: typeof raw.confirm === "string" ? raw.confirm : undefined,
       detail: typeof raw.detail === "string" ? raw.detail : undefined,
       taskCardDefinition: type === "task-card" ? taskCardDefinition(raw, label) : undefined,
       labelOffset: labelRange.offset,
@@ -186,9 +200,15 @@ export function parseTaskFile(
         task.error = '"folder" must be a string.';
       } else if (raw.icon !== undefined && typeof raw.icon !== "string") {
         task.error = '"icon" must be a string.';
-      } else if (raw.confirm !== undefined && typeof raw.confirm !== "boolean" && typeof raw.confirm !== "string") {
-        task.error = '"confirm" must be a boolean or a string.';
+      } else if (raw.skipFolderRun !== undefined && typeof raw.skipFolderRun !== "boolean") {
+        task.error = '"skipFolderRun" must be a boolean.';
       }
+    }
+    if (
+      raw.confirm !== undefined
+      && (typeof raw.confirm !== "string" || raw.confirm.trim().length === 0)
+    ) {
+      task.error ??= '"confirm" must be a non-empty string.';
     }
 
     result.tasks.push(task);
@@ -295,7 +315,10 @@ function taskCardDefinition(
   if (typeof raw.icon === "string") {
     definition.icon = raw.icon;
   }
-  if (typeof raw.confirm === "boolean" || typeof raw.confirm === "string") {
+  if (typeof raw.skipFolderRun === "boolean") {
+    definition.skipFolderRun = raw.skipFolderRun;
+  }
+  if (typeof raw.confirm === "string") {
     definition.confirm = raw.confirm;
   }
   return definition;

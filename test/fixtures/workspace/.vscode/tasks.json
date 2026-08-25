@@ -5,6 +5,9 @@
       "label": "Ordinary shell",
       "type": "shell",
       "command": "echo ordinary",
+      "folder": "Native/Build",
+      "icon": "🔨",
+      "confirm": "Run the ordinary shell task?",
       "detail": "An ordinary configured task",
       "problemMatcher": []
     },
@@ -18,7 +21,6 @@
       "execution": "shell",
       "folder": "Development/Tests",
       "icon": "🧪",
-      "confirm": false,
       "problemMatcher": []
     },
     {
@@ -31,7 +33,6 @@
       ],
       "execution": "process",
       "folder": "Development/Tests",
-      "confirm": false,
       "detail": "A safe integration-test task",
       "presentation": {
         "reveal": "never",
@@ -48,7 +49,6 @@
       "command": "node -e \"process.exit(0)\"",
       "execution": "shell",
       "folder": "Development/Tests",
-      "confirm": false,
       "problemMatcher": []
     },
     {
@@ -61,7 +61,6 @@
       ],
       "execution": "process",
       "folder": "Development/Identity",
-      "confirm": false,
       "problemMatcher": []
     },
     {
@@ -74,7 +73,6 @@
       ],
       "execution": "process",
       "folder": "Development/Identity",
-      "confirm": false,
       "problemMatcher": []
     },
     {
@@ -84,7 +82,6 @@
       "args": "not-an-array",
       "execution": "process",
       "folder": "Development/Invalid",
-      "confirm": false,
       "problemMatcher": []
     },
     {
@@ -97,7 +94,6 @@
       ],
       "execution": "process",
       "folder": "Development/Tests",
-      "confirm": false,
       "problemMatcher": []
     },
     {
@@ -109,7 +105,18 @@
       ],
       "execution": "process",
       "folder": "Development/Sequence",
-      "confirm": false,
+      "problemMatcher": []
+    },
+    {
+      "label": "Sequence ignored",
+      "type": "task-card",
+      "command": "git",
+      "args": [
+        "--version"
+      ],
+      "execution": "process",
+      "folder": "Development/Sequence/Nested",
+      "skipFolderRun": true,
       "problemMatcher": []
     },
     {
@@ -121,7 +128,6 @@
       ],
       "execution": "process",
       "folder": "Development/Sequence/Nested",
-      "confirm": false,
       "problemMatcher": []
     },
     {
@@ -134,7 +140,6 @@
       ],
       "execution": "process",
       "folder": "Development/Sequence/Nested",
-      "confirm": false,
       "problemMatcher": []
     },
     {
@@ -147,7 +152,6 @@
       ],
       "execution": "process",
       "folder": "Development/Tests",
-      "confirm": true,
       "problemMatcher": []
     },
     {
@@ -160,7 +164,6 @@
       ],
       "execution": "process",
       "folder": "Development/Removal",
-      "confirm": false,
       "problemMatcher": []
     },
     {
@@ -173,7 +176,6 @@
       ],
       "execution": "process",
       "folder": "Development/Removal",
-      "confirm": false,
       "problemMatcher": []
     }
   ]

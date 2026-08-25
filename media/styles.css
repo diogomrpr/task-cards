@@ -9,6 +9,7 @@
     var(--task-card-background)
   );
   --task-card-running: var(--vscode-testing-iconFailed, #f14c4c);
+  --task-card-folder-run: var(--vscode-testing-iconPassed, #73c991);
   --task-card-skeleton: color-mix(in srgb, var(--vscode-foreground) 16%, transparent);
   --task-card-skeleton-highlight: color-mix(in srgb, var(--vscode-foreground) 9%, transparent);
 }
@@ -223,6 +224,13 @@ input {
   animation: running-pulse 3s ease-in-out infinite;
 }
 
+.card.folder-run-preview {
+  animation: none;
+  box-shadow:
+    inset 0 0 0 2px var(--task-card-folder-run),
+    0 0 8px color-mix(in srgb, var(--task-card-folder-run) 45%, transparent);
+}
+
 @keyframes running-pulse {
   0%,
   100% {
@@ -316,6 +324,25 @@ h3 {
   border-radius: 999px;
   font-size: 0.8em;
   font-weight: 700;
+}
+
+.folder-run-order {
+  display: inline-flex;
+  flex: 0 0 auto;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  align-items: center;
+  justify-content: center;
+  color: var(--vscode-badge-foreground);
+  background: var(--task-card-folder-run);
+  border-radius: 999px;
+  font-size: 0.8em;
+  font-weight: 700;
+}
+
+.folder-run-order[hidden] {
+  display: none;
 }
 
 .error {
@@ -415,7 +442,7 @@ body.vscode-reduce-motion .skeleton-card::after {
   animation: none;
 }
 
-body.vscode-reduce-motion .card.running {
+body.vscode-reduce-motion .card.running:not(.folder-run-preview) {
   animation: none;
   box-shadow: inset 0 0 0 2px var(--task-card-running);
 }
@@ -425,7 +452,7 @@ body.vscode-reduce-motion .card.running {
     animation: none;
   }
 
-  .card.running {
+  .card.running:not(.folder-run-preview) {
     animation: none;
     box-shadow: inset 0 0 0 2px var(--task-card-running);
   }
@@ -439,6 +466,12 @@ body.vscode-reduce-motion .card.running {
 
   .card.running {
     animation: none;
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
+
+  .card.folder-run-preview {
+    box-shadow: none;
     outline: 2px solid Highlight;
     outline-offset: -2px;
   }

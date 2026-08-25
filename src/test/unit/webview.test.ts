@@ -90,6 +90,11 @@ describe("webview renderer", () => {
         disabledReason: "Could not resolve"
       }),
       task("build-customization", "Build HTML Customization", ["Build", "HTML"]),
+      task("build-ignored", "Build Ignored", ["Build", "HTML"], {
+        available: false,
+        disabledReason: "Ignored",
+        skipFolderRun: true
+      }),
       task("deep-task", "Deep Task", ["One", "Two", "Three"]),
       task("ordinary", "Ordinary", ["Ungrouped"])
     ];
@@ -113,6 +118,7 @@ describe("webview renderer", () => {
     const loadingSections = rendered
       .filter((element) => element.tagName === "summary")
       .map((element) => element.textContent);
+    assert.deepEqual(loadingSections, ["Serve", "Build", "HTML", "One", "Two", "Three", "Ungrouped"]);
     const loadingFolderButtons = rendered.filter((element) => hasClass(element, "folder-run"));
     assert.equal(loadingFolderButtons.length, 7);
     assert.ok(loadingFolderButtons.every((button) => button.attributes["aria-disabled"] === "true"));
@@ -147,7 +153,7 @@ describe("webview renderer", () => {
     );
     assert.equal(content.attributes["aria-busy"], "false");
     assert.equal(elements.search.disabled, false);
-    assert.equal(elements.status.textContent, "5 tasks shown");
+    assert.equal(elements.status.textContent, "6 tasks shown");
     assert.equal(rendered.filter((element) => hasClass(element, "card-footer")).length, 0);
     assert.equal(rendered.filter((element) => hasClass(element, "status")).length, 0);
     assert.equal(rendered.filter((element) => hasClass(element, "stop")).length, 1);
@@ -168,6 +174,20 @@ describe("webview renderer", () => {
 
     const folderButtons = rendered.filter((element) => hasClass(element, "folder-run"));
     assert.equal(folderButtons.length, loadingFolderButtons.length);
+    const serve = rendered.find(
+      (element) => element.tagName === "summary" && element.textContent === "Serve"
+    );
+    assert.ok(serve);
+    const runServe = descendants(serve).find((element) => hasClass(element, "folder-run"));
+    assert.ok(runServe);
+    const serveHtml = cardFor(rendered, "Serve HTML");
+    const serveDocs = cardFor(rendered, "Serve Documentation");
+    runServe.dispatch("mouseenter");
+    assert.ok(!hasClass(serveHtml, "folder-run-preview"));
+    assert.ok(!hasClass(serveDocs, "folder-run-preview"));
+    runServe.dispatch("focus");
+    assert.ok(!hasClass(serveHtml, "folder-run-preview"));
+
     const build = rendered.find(
       (element) => element.tagName === "summary" && element.textContent === "Build"
     );
@@ -175,7 +195,20 @@ describe("webview renderer", () => {
     const runBuild = descendants(build).find((element) => hasClass(element, "folder-run"));
     assert.ok(runBuild);
     assert.equal(runBuild.attributes["aria-disabled"], "false");
+    const buildCustomization = cardFor(rendered, "Build HTML Customization");
+    const buildIgnored = cardFor(rendered, "Build Ignored");
+    runBuild.dispatch("mouseenter");
+    assertFolderRunOrder(buildCustomization, "1");
+    assert.ok(!hasClass(buildIgnored, "folder-run-preview"));
+    runBuild.dispatch("mouseleave");
+    assert.ok(!hasClass(buildCustomization, "folder-run-preview"));
+    runBuild.dispatch("focus");
+    assertFolderRunOrder(buildCustomization, "1");
+    runBuild.dispatch("blur");
+    assert.ok(!hasClass(buildCustomization, "folder-run-preview"));
+    runBuild.dispatch("mouseenter");
     runBuild.dispatch("click");
+    assert.ok(!hasClass(buildCustomization, "folder-run-preview"));
     assert.equal(
       JSON.stringify(postedMessages[postedMessages.length - 1]),
       JSON.stringify({
@@ -190,6 +223,8 @@ describe("webview renderer", () => {
     const styles = readFileSync(path.resolve(__dirname, "../../../media/styles.css"), "utf8");
     assert.match(styles, /body\.vscode-reduce-motion \.card\.running/);
     assert.match(styles, /body\.vscode-reduce-motion \.skeleton-card::after/);
+    assert.match(styles, /--task-card-folder-run: var\(--vscode-testing-iconPassed/);
+    assert.match(styles, /\.card\.folder-run-preview \{\s*animation: none;\s*box-shadow:/);
   });
 });
 
@@ -213,6 +248,7 @@ function task(
     searchText: label.toLocaleLowerCase(),
     available: true,
     running: false,
+    skipFolderRun: false,
     confirm: false,
     ...overrides
   };
@@ -224,4 +260,21 @@ function descendants(root: Element): Element[] {
 
 function hasClass(element: Element, className: string): boolean {
   return element.className.split(" ").includes(className);
+}
+
+function cardFor(elements: Element[], label: string): Element {
+  const card = elements.find((element) =>
+    element.tagName === "article"
+    && descendants(element).some((child) => child.tagName === "h3" && child.textContent === label)
+  );
+  assert.ok(card);
+  return card;
+}
+
+function assertFolderRunOrder(card: Element, order: string): void {
+  assert.ok(hasClass(card, "folder-run-preview"));
+  const badge = descendants(card).find((element) => hasClass(element, "folder-run-order"));
+  assert.ok(badge);
+  assert.equal(badge.hidden, false);
+  assert.equal(badge.textContent, order);
 }

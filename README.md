@@ -10,12 +10,13 @@ Task Cards turns tasks declared in each workspace folder's `.vscode/tasks.json` 
 
 - Run a task by clicking anywhere on its card.
 - Run every task in a folder, including subfolders, in `tasks.json` order; the sequence stops after the first failure and blocks overlapping card launches.
+- Exclude individual tasks from folder runs and order previews with `skipFolderRun`.
 - Stop a running task directly from its card.
 - Show the final folder layout with skeleton cards until VS Code finishes resolving runnable tasks.
 - Refresh cards automatically when `.vscode/tasks.json` is saved or changed externally.
 - Right-click a card to open its exact definition in `tasks.json`.
-- Organize `task-card` tasks into slash-separated nested folders.
-- Add an emoji or short text icon to each `task-card` task.
+- Organize configured tasks into slash-separated nested folders.
+- Add an emoji or short text icon to each configured task.
 - Require confirmation for sensitive launches.
 - Search task names, details, types, folders, and workspace names.
 - Keep a stable two-column grid that adapts to one column in narrow sidebars.
@@ -66,19 +67,22 @@ Open **Task Cards** from the Activity Bar. Click a card to run it, or right-clic
 | `execution` | No | `shell` (default) or `process`. |
 | `folder` | No | Slash-separated nested folder path. |
 | `icon` | No | Emoji or short text displayed on the card. |
-| `confirm` | No | `true` for the standard prompt, or a string for a custom prompt. |
+| `skipFolderRun` | No | `true` to exclude the task from folder runs and their order previews. |
+| `confirm` | No | A non-empty message shown beneath the confirmation headline. Omit the property for no confirmation. |
 
 Standard VS Code fields such as `options`, `presentation`, `problemMatcher`, `dependsOn`, `runOptions`, and `detail` remain supported.
 
+The `folder`, `icon`, `skipFolderRun`, and `confirm` properties are also read from ordinary configured task types such as `shell` and `process`; those tasks keep their native VS Code execution. These properties are extension-specific on built-in task types, so VS Code may show a schema warning for them. Use `task-card` when you want schema-provided completion for all Task Cards properties.
+
 For shell execution, a `command` without `args` is treated as a complete shell command line, so operators such as pipes and `&&` work normally. When `args` is supplied, VS Code safely constructs the command line from the executable and its arguments.
 
-Ordinary configured task types are also displayed under **Ungrouped**. Custom `folder`, `icon`, and `confirm` properties are available only on `task-card` tasks so that `tasks.json` remains schema-valid.
+Ordinary configured task types are also displayed. Tasks without a `folder` appear under **Ungrouped**.
 
 ## Scope and confirmation boundary
 
 Only tasks explicitly declared in a workspace folder's `.vscode/tasks.json` are shown. Auto-detected package scripts, user tasks, and tasks defined only in a `.code-workspace` file are intentionally excluded.
 
-Confirmation is enforced only when a task is launched from Task Cards. VS Code does not let this extension intercept every native execution path, so launches from **Tasks: Run Task**, keybindings, dependencies, or other extensions bypass Task Cards confirmation.
+Confirmation is enforced only when a task is launched from Task Cards. Folder runs show one confirmation dialog listing every included task's confirmation message. VS Code does not let this extension intercept every native execution path, so launches from **Tasks: Run Task**, keybindings, dependencies, or other extensions bypass Task Cards confirmation.
 
 Task Cards targets official desktop VS Code, including remote workspaces. It has no browser extension entry, telemetry, or external network requests.
 

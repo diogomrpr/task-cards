@@ -8,6 +8,7 @@
   const saved = vscode.getState() || {};
   let model = { ready: false, trusted: false, multiRoot: false, tasks: [], issues: [] };
   let collapsed = saved.collapsed || {};
+  const renderedCards = new Map();
 
   search.value = saved.query || "";
   search.addEventListener("input", () => {
@@ -27,6 +28,7 @@
   vscode.postMessage({ type: "ready" });
 
   function render() {
+    renderedCards.clear();
     content.replaceChildren();
     content.setAttribute("aria-busy", String(!model.ready));
     search.disabled = !model.ready;
@@ -161,7 +163,7 @@
     folderSegments = []
   ) {
     const children = [];
-    for (const [name, child] of [...node.children.entries()].sort(byFirst)) {
+    for (const [name, child] of node.children) {
       const key = `${path}/${name}`;
       const childFolderSegments = [...folderSegments, name];
       children.push(section(
@@ -186,6 +188,7 @@
   function folderRunButton(name, workspaceId, folderSegments) {
     const tasks = model.tasks.filter((task) =>
       task.workspaceId === workspaceId
+      && !task.skipFolderRun
       && folderSegments.every((segment, index) => task.folderSegments[index] === segment)
     );
     const canRun = model.ready
@@ -199,18 +202,52 @@
       if (canRun) {
         run.disabled = true;
         run.setAttribute("aria-disabled", "true");
+        clearFolderRunOrder();
         vscode.postMessage({ type: "runFolder", workspaceId, folderSegments });
       }
     });
     run.className += " folder-run";
     run.setAttribute("aria-disabled", String(!canRun));
     run.title = canRun ? `${label} in tasks.json order` : folderUnavailableReason(tasks);
+    if (canRun) {
+      run.addEventListener("mouseenter", () => showFolderRunOrder(tasks));
+      run.addEventListener("mouseleave", clearFolderRunOrder);
+      run.addEventListener("focus", () => showFolderRunOrder(tasks));
+      run.addEventListener("blur", clearFolderRunOrder);
+    }
     return run;
+  }
+
+  function showFolderRunOrder(tasks) {
+    clearFolderRunOrder();
+    tasks.forEach((task, index) => {
+      const rendered = renderedCards.get(task.key);
+      if (!rendered) {
+        return;
+      }
+      rendered.article.className += " folder-run-preview";
+      rendered.order.hidden = false;
+      rendered.order.textContent = String(index + 1);
+      rendered.order.setAttribute("aria-label", `Folder run order ${index + 1}`);
+    });
+  }
+
+  function clearFolderRunOrder() {
+    for (const rendered of renderedCards.values()) {
+      rendered.article.className = rendered.article.className
+        .split(" ")
+        .filter((name) => name !== "folder-run-preview")
+        .join(" ");
+      rendered.order.hidden = true;
+    }
   }
 
   function folderUnavailableReason(tasks) {
     if (!model.ready) {
       return "Tasks are still loading";
+    }
+    if (tasks.length === 0) {
+      return "No tasks are included in this folder run";
     }
     if (!model.trusted) {
       return "Trust this workspace before running tasks";
@@ -264,6 +301,10 @@
     title.textContent = task.label;
     title.title = task.label;
     heading.append(title);
+    const order = document.createElement("span");
+    order.className = "folder-run-order";
+    order.hidden = true;
+    heading.append(order);
     if (task.confirm) {
       const confirmation = document.createElement("span");
       confirmation.className = "confirmation-indicator";
@@ -283,6 +324,7 @@
       heading.append(stop);
     }
     article.append(heading);
+    renderedCards.set(task.key, { article, order });
     return article;
   }
 
@@ -338,10 +380,6 @@
       result.set(value, group);
     }
     return result;
-  }
-
-  function byFirst(left, right) {
-    return left[0].localeCompare(right[0]);
   }
 
   function isOpen(key, defaultValue) {

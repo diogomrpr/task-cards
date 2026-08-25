@@ -2,7 +2,7 @@
   "name": "task-cards",
   "displayName": "Task Cards",
   "description": "Browse and run workspace tasks as compact, organized cards.",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "publisher": "DiogoRibeiro",
   "private": true,
   "license": "MIT",
@@ -122,17 +122,15 @@
             "type": "string",
             "description": "An emoji or short text icon displayed on the task card."
           },
-          "confirm": {
-            "oneOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "string"
-              }
-            ],
+          "skipFolderRun": {
+            "type": "boolean",
             "default": false,
-            "description": "Ask for confirmation when Task Cards launches this task. A string is used as the confirmation message."
+            "description": "Exclude this task from folder runs and their order previews."
+          },
+          "confirm": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A non-empty confirmation message shown before Task Cards launches this task. Omit the property for no confirmation."
           }
         }
       }

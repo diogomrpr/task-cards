@@ -8,8 +8,10 @@ interface ViewTask {
   icon?: string;
   workspaceId: string;
   available: boolean;
+  confirm: boolean;
   running: boolean;
   folderSegments: string[];
+  skipFolderRun: boolean;
   disabledReason?: string;
 }
 
@@ -44,6 +46,10 @@ suite("Task Cards integration", () => {
     assert.ok(labels.includes("Card process"));
     assert.ok(!labels.includes("auto-only"));
     assert.ok(!labels.includes("Workspace-file-only"));
+    const ordinary = snapshot.view.tasks.find((task) => task.label === "Ordinary shell");
+    assert.deepEqual(ordinary?.folderSegments, ["Native", "Build"]);
+    assert.equal(ordinary?.icon, "🔨");
+    assert.equal(ordinary?.confirm, true);
   });
 
   test("Restricted Mode remains read-only", async function () {
@@ -164,7 +170,10 @@ suite("Task Cards integration", () => {
     const configured = snapshot.tasks.find((task) => task.label === first.label);
     assert.equal(configured?.resolved, true, configured?.error);
     assert.equal(first.available, true);
-    const sequenceLabels = new Set(["Sequence first", "Sequence failure", "Sequence skipped"]);
+    const ignored = snapshot.view.tasks.find((task) => task.label === "Sequence ignored");
+    assert.equal(ignored?.skipFolderRun, true);
+    assert.equal(ignored?.available, true);
+    const sequenceLabels = new Set(["Sequence first", "Sequence ignored", "Sequence failure", "Sequence skipped"]);
     const started: string[] = [];
     const disposable = vscode.tasks.onDidStartTask((event) => {
       if (sequenceLabels.has(event.execution.task.name)) {
@@ -332,7 +341,6 @@ function taskFileWith(originalText: string, label: string): string {
     command: "git",
     args: ["-c", `taskcards.label=${label}`, "--version"],
     execution: "process",
-    confirm: false,
     problemMatcher: []
   });
   return `${JSON.stringify(taskFile, null, 2)}\n`;
