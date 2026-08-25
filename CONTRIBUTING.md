@@ -116,3 +116,15 @@ Add or update the smallest test that demonstrates non-trivial behavior:
 5. Complete the pull-request template with the checks you ran and any manual verification.
 
 CI repeats type-checking, the full dependency audit, unit tests, trusted and Restricted Mode integration tests, minimum-version tests, and VSIX packaging on the supported platforms.
+
+## Releases
+
+Do not upload a new VSIX before its source is committed and ready for GitHub. Use this release flow:
+
+1. Update the version in `package.json`, add the matching `CHANGELOG.md` entry, and commit all release changes on `main`.
+2. Run `pnpm run test`, `pnpm run test:minimum`, and `pnpm run package`.
+3. Run `node scripts/release.cjs 0.2.2`, replacing `0.2.2` with the new version.
+4. Upload the generated VSIX through the [Task Cards Marketplace management page](https://marketplace.visualstudio.com/manage/publishers/DiogoRibeiro/extensions/task-cards/hub).
+5. Verify that the new version appears on both the Marketplace and GitHub.
+
+The release command requires a clean `main` branch and an existing matching VSIX, checks that the version and changelog agree, refuses to overwrite an existing GitHub tag, creates `v<version>`, and atomically pushes `main` with the tag. Generated VSIX files remain local and ignored by Git.

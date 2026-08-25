@@ -147,7 +147,8 @@
     "test": "pnpm run test:unit && pnpm run test:integration",
     "audit": "pnpm audit",
     "package": "vsce package --follow-symlinks",
-    "publish": "vsce publish --follow-symlinks"
+    "publish": "vsce publish --follow-symlinks",
+    "release": "node scripts/release.cjs"
   },
   "dependencies": {
     "jsonc-parser": "^3.3.1"
